@@ -9,7 +9,7 @@
 set -euo pipefail
 
 exit_code=0
-snyk_test_json=''
+snyk_test_json='snyk_kotlin_results.json'
 formatted_json=''
 args=("$*")
 
