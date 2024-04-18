@@ -22,7 +22,7 @@ run_snyk_delta () {
 format_snyk_test_output() {
     echo "Procesing snyk test --json output"
     {
-        formatted_json=`echo $snyk_test_json | jq -r 'if type=="array" then .[] else . end | @base64'`
+        formatted_json=`cat $snyk_test_json | jq -r 'if type=="array" then .[] else . end | @base64'`
         } || {
         echo 'failed to process snyk-test result'
         exit 2
