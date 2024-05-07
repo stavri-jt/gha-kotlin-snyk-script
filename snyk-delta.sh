@@ -58,5 +58,5 @@ for test in `echo $formatted_json`; do
     echo "Project: ${project_name} | Exit code: ${project_exit_code}"
 done
 
-echo "Overall exit code for snyk-delta: ${exit_code}"
+echo "Overall exit code for snyk-delta-all-projects: ${exit_code}"
 exit $exit_code
