@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Call this script as you would call snyk test | snyk-delta, minus the --all-projects and --json flags
-# This is an interim fix until snyk-delta supports all projects itself (or snyk supports a --new flag)
-# example: /bin/bash snyk_delta_all_projects.sh --severity=high --exclude=tests,resources -- -s config.yaml
-# runs snyk test --all-projects --json $*
-# requires jq to be installed
-
 set -euo pipefail
 
 exit_code=0
@@ -20,7 +14,7 @@ run_snyk_delta () {
 
 
 format_snyk_test_output() {
-    echo "Procesing snyk_kotlin_results.json"
+    #echo "Procesing snyk_kotlin_results.json"
     {
         formatted_json=`cat $snyk_test_json | jq -r 'if type=="array" then .[] else . end | @base64'`
         } || {
@@ -36,11 +30,11 @@ format_snyk_test_output
 for test in `echo $formatted_json`; do
     single_result="$(echo ${test} | base64 -d)" # use "base64 -d -i" on Windows, which will ignore any "gardage" characters echoing may add
     project_name="$(echo ${single_result} | jq -r '.displayTargetFile')"
-    echo 'Processing: '  ${project_name}
+    echo 'Project: '  ${project_name}
     if echo ${single_result} | run_snyk_delta
     then
         project_exit_code=$?
-        echo 'Finished processing'
+        #echo 'Finished processing'
     else
         project_exit_code=$?
         if [ $project_exit_code -gt 1 ]
@@ -48,15 +42,15 @@ for test in `echo $formatted_json`; do
             echo 'snyk-delta encountered an error, retrying.'
             echo ${single_result} | run_snyk_delta
         fi
-        echo 'Finished processing'
+        #echo 'Finished processing'
     fi
 
     if [ $project_exit_code -gt $exit_code ]
     then
         exit_code=$project_exit_code
     fi
-    echo "Project: ${project_name} | Exit code: ${project_exit_code}"
+    #echo "Project: ${project_name} | Exit code: ${project_exit_code}"
 done
 
-echo "Overall exit code for snyk-delta-all-projects: ${exit_code}"
+#echo "Overall exit code for snyk-delta: ${exit_code}"
 exit $exit_code
